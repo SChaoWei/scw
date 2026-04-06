@@ -1,0 +1,243 @@
+{{- define "main" }}
+
+{{- if (and site.Params.cardMode.enabled .IsHome) }}
+{{- partial "card.html" . }}
+{{- else }} {{/* if not cardMode */}}
+
+{{- if not .IsHome | and .Title }}
+<header class="page-header">
+  {{- partial "breadcrumbs.html" . }}
+  <h1>
+    {{ .Title }}
+    {{- if and (or (eq .Kind `term`) (eq .Kind `section`)) (.Param "ShowRssButtonInSectionTermList") }}
+    {{- with .OutputFormats.Get "rss" }}
+    <a href="{{ .RelPermalink }}" title="RSS" aria-label="RSS">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" height="23">
+        <path d="M4 11a9 9 0 0 1 9 9" />
+        <path d="M4 4a16 16 0 0 1 16 16" />
+        <circle cx="5" cy="19" r="1" />
+      </svg>
+    </a>
+    {{- end }}
+    {{- end }}
+  </h1>
+  {{- if .Description }}
+  <div class="post-description">
+    {{ .Description | markdownify }}
+  </div>
+  {{- end }}
+</header>
+{{- end }}
+
+{{- if .Content }}
+<div class="post-content">
+  {{- if (.Param "enableAnchoredHeadings") }}
+  {{- partial "anchored_headings.html" .Content -}}
+  {{- else }}{{ .Content }}{{ end }}
+</div>
+{{- end }}
+
+{{- $pages := union .RegularPages .Sections }}
+{{- if eq .Data.Plural "categories" }}
+{{- $pages = $pages.ByDate }}
+{{- else }}
+{{- $pages = where $pages "Params.hiddenInList" "ne" true }}
+{{- end }}
+
+{{- if .IsHome }}
+  {{- $pages = where site.RegularPages "Type" "in" (site.Params.mainSections | default (slice "posts")) }}
+  {{- $pages = where $pages "Params.hiddenInHomeList" "ne" true }}
+  {{- $pages = where $pages "Params.hiddenInList" "ne" true }}
+{{- end }}
+<!-- PLACEHOLDER_LIST_CONTINUE -->
+
+{{- /* 排序逻辑 */ -}}
+{{- if or .IsHome (eq .Section "posts") }}
+  {{- if site.Params.ShowLastMod | default true }}
+    {{- $pages = $pages.ByLastmod.Reverse }}
+  {{- else }}
+    {{- $pages = $pages.ByDate.Reverse }}
+  {{- end }}
+
+  {{- $isBlogMode := and .IsHome (not site.Params.disableSpecial1stPost) (not site.Params.portalMode) }}
+
+  {{- if $isBlogMode }}
+    {{- $latest := first 1 $pages }}
+    {{- $rest := $pages | complement $latest }}
+    {{- $pin := where $rest "Params.pin" "gt" 0 }}
+    {{- $normal := $rest | complement $pin }}
+    {{- $pin = sort $pin "Params.pin" "asc" }}
+    {{- $pages = $latest | append ($pin | append $normal) }}
+  {{- else }}
+    {{- $pin := where $pages "Params.pin" "gt" 0 }}
+    {{- $normal := $pages | complement $pin }}
+    {{- $pin = sort $pin "Params.pin" "asc" }}
+    {{- $pages = $pin | append $normal }}
+  {{- end }}
+{{- end }}
+
+{{- $paginator := .Paginate $pages }}
+
+{{- if and .IsHome site.Params.portalMode (eq $paginator.PageNumber 1) }}
+{{- partial "portal.html" . }}
+{{- end }}
+
+{{- /* ===== 首页两栏布局 ===== */ -}}
+{{- if .IsHome }}
+<div class="home-layout">
+  <div class="home-posts">
+    <h2 class="home-posts-title">博客列表</h2>
+{{- end }}
+
+{{- /* ===== 分类页左侧栏 ===== */ -}}
+{{- if eq .Data.Plural "categories" }}
+<div class="category-layout">
+  <aside class="category-sidebar">
+    <h3>分类</h3>
+    <ul>
+    {{- range site.Taxonomies.categories }}
+      <li{{ if eq .Page.Title $.Title }} class="active"{{ end }}>
+        <a href="{{ .Page.Permalink }}">{{ .Page.Title }} ({{ .Count }})</a>
+      </li>
+    {{- end }}
+    </ul>
+  </aside>
+  <div class="category-posts">
+{{- end }}
+
+{{- $term := .Data.Term }}
+{{- range $index, $page := $paginator.Pages }}
+
+{{- $class := "post-entry" }}
+
+{{- $user_preferred := or site.Params.disableSpecial1stPost site.Params.portalMode }}
+{{- if (and $.IsHome (eq $paginator.PageNumber 1) (eq $index 0) (not $user_preferred)) }}
+{{- $class = "first-entry" }}
+{{- else if $term }}
+{{- $class = "post-entry tag-entry" }}
+{{- end }}
+
+  {{- $coverImgName := .Params.cover.image | default site.Params.defaultImage }}
+  {{- $coverUrl := "" -}}
+  {{- if $coverImgName -}}
+    {{- $pbImg := (.Resources.ByType "image").GetMatch (printf "*%s*" $coverImgName) -}}
+    {{- if $pbImg -}}
+      {{- $coverUrl = $pbImg.Permalink -}}
+    {{- else -}}
+      {{- $coverUrl = $coverImgName | relURL -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $isEncrypted := or (and .File (in .File.Path "protected")) .Params.mima .Params.password -}}
+  <article class="{{ $class }}{{ if $.IsHome }} home-post-centered{{ end }}" {{ if and $coverUrl (not .Params.cover.hidden) }} data-cover="{{ $coverUrl }}" {{ end }} {{ if $isEncrypted }}data-pagefind-ignore{{ end }}>
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">
+      {{- .Title }}
+      <span class="entry-hint-container">
+        {{- if .Draft }}
+        <span class="entry-hint" title="Draft">
+          <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
+            <path d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+          </svg>
+        </span>
+        {{- end }}
+        {{- if and .Params.pin (findRE "^[1-9][0-9]*$" (printf "%v" .Params.pin)) }}
+        <span class="entry-hint" title="Sticky">
+          <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
+            <path d="m640-480 80 80v80H520v240l-40 40-40-40v-240H240v-80l80-80v-280h-40v-80h400v80h-40v280Z"/>
+          </svg>
+        </span>
+        {{- end }}
+      </span>
+    </h2>
+  </header>
+  {{- if ne (.Param "hideSummary") true }}
+  <div class="entry-content">
+    <p>{{ if $isEncrypted }}{{ i18n "protected_summary" }}{{ else }}{{ .Summary | plainify | htmlUnescape }}{{ if .Truncated }}...{{ end }}{{ end }}</p>
+  </div>
+  {{- end }}
+  {{- if not (.Param "hideMeta") }}
+  <footer class="entry-footer">
+    {{- partial "post_meta.html" (dict "page" . "is_list" true) -}}
+  </footer>
+  {{- end }}
+  <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ if and (ne $.Kind "term") (ne $.Kind "taxonomy") }}{{ .Params.link | default .RelPermalink }}{{ else }}{{ .RelPermalink }}{{ end }}"></a>
+</article>
+{{- end }}
+
+{{- if gt $paginator.TotalPages 1 }}
+<footer class="page-footer">
+  <nav class="pagination">
+    {{- if $paginator.HasPrev }}
+    <a class="prev" href="{{ $paginator.Prev.URL | relURL }}">
+      «&nbsp;{{ i18n "prev_page" }}&nbsp;
+      {{- if (.Param "ShowPageNums") }}
+      {{- sub $paginator.PageNumber 1 }}/{{ $paginator.TotalPages }}
+      {{- end }}
+    </a>
+    {{- end }}
+    {{- if $paginator.HasNext }}
+    <a class="next" href="{{ $paginator.Next.URL | relURL }}">
+      {{- i18n "next_page" }}&nbsp;
+      {{- if (.Param "ShowPageNums") }}
+      {{- add 1 $paginator.PageNumber }}/{{ $paginator.TotalPages }}
+      {{- end }}&nbsp;»
+    </a>
+    {{- end }}
+  </nav>
+</footer>
+{{- end }}
+
+{{- /* ===== 关闭分类页布局 ===== */ -}}
+{{- if eq .Data.Plural "categories" }}
+  </div>{{/* end .category-posts */}}
+</div>{{/* end .category-layout */}}
+{{- end }}
+
+{{- /* ===== 首页右侧栏 ===== */ -}}
+{{- if .IsHome }}
+  </div>{{/* end .home-posts */}}
+  <aside class="home-sidebar">
+    <!-- 个人简介 -->
+    <div class="sidebar-profile">
+      {{- $avatar := resources.Get "images/avatar.png" }}
+      {{- if $avatar }}
+      <img class="sidebar-avatar" src="{{ $avatar.RelPermalink }}" alt="头像">
+      {{- else }}
+      <div class="sidebar-avatar-placeholder">{{ substr site.Title 0 1 }}</div>
+      {{- end }}
+      <h3 class="sidebar-name">{{ site.Title }}</h3>
+      <p class="sidebar-bio">Deep Learning / Robotics / Hardware</p>
+      <div class="sidebar-social">
+        <a href="https://github.com/your-github" target="_blank" rel="noopener" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+        <a href="mailto:your-email@example.com" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <h3>分类</h3>
+      <ul>
+      {{- range site.Taxonomies.categories }}
+        <li><a href="{{ .Page.Permalink }}">{{ .Page.Title }} ({{ .Count }})</a></li>
+      {{- end }}
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <h3>标签</h3>
+      <ul class="sidebar-tags">
+      {{- range site.Taxonomies.tags }}
+        <li><a href="{{ .Page.Permalink }}">{{ .Page.Title }}</a></li>
+      {{- end }}
+      </ul>
+    </div>
+  </aside>
+</div>{{/* end .home-layout */}}
+{{- end }}
+
+{{- end }}{{/* end cardMode */}}
+
+{{- end }}{{- /* end main */ -}}

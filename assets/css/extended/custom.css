@@ -1,0 +1,490 @@
+/* === 导航栏突出 === */
+.header {
+    background: var(--theme);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+/* === Logo 美化 === */
+.logo a {
+    background: linear-gradient(135deg, #6366f1, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+/* 主题切换按钮美化 */
+button#theme-toggle {
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.2s, border-color 0.2s;
+}
+button#theme-toggle:hover {
+    border-color: var(--primary);
+    background: var(--theme);
+}
+
+/* === 导航栏布局：logo靠左，菜单靠右 === */
+.logo {
+    margin-left: 8px;
+    margin-right: auto;
+}
+#menu {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* === 导航栏内联搜索框 === */
+.nav-search {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-left: 0;
+    margin-right: 8px;
+    padding-left: 12px;
+}
+.nav-search-icon {
+    position: absolute;
+    left: 22px;
+    color: var(--secondary);
+    pointer-events: none;
+}
+.nav-search-input {
+    width: 180px;
+    padding: 6px 12px 6px 32px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--entry);
+    color: var(--primary);
+    font-size: 14px;
+    outline: none;
+    transition: width 0.3s, border-color 0.2s, box-shadow 0.2s;
+}
+.nav-search-input::placeholder {
+    color: var(--secondary);
+    opacity: 0.6;
+}
+.nav-search-input:focus {
+    width: 260px;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+.nav-search-results {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 420px;
+    max-width: 90vw;
+    max-height: 60vh;
+    overflow-y: auto;
+    background: var(--theme);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    z-index: 1100;
+}
+.nav-search-results.active {
+    display: block;
+}
+/* 隐藏 Pagefind 自带的搜索输入框 */
+.nav-search-results .pagefind-ui__search-input {
+    display: none;
+}
+.nav-search-results .pagefind-ui__search-clear {
+    display: none;
+}
+
+/* === 首页：撑开外层 .main 容器 === */
+body.home-profile .main {
+    max-width: min(1400px, 100vw);
+    padding: var(--gap) 40px;
+}
+
+/* === 首页两栏布局 === */
+.home-layout {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 0;
+}
+.home-posts {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-right: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+.home-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    position: sticky;
+    top: calc(var(--header-height) + 20px);
+    align-self: flex-start;
+    padding-left: 24px;
+    border-left: 1px solid var(--border);
+}
+.home-post-centered .entry-header {
+    text-align: center;
+}
+.home-posts-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+/* 首页文章卡片间距缩小 + 浮起效果 */
+body.home-profile .post-entry {
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+body.home-profile .post-entry:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary);
+}
+
+/* === 侧边栏个人简介 === */
+.sidebar-profile {
+    text-align: center;
+    margin-bottom: calc(var(--gap) * 1.5);
+    padding: 20px 16px;
+    background: var(--entry);
+    border-radius: var(--radius);
+}
+.sidebar-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+.sidebar-avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--theme);
+    font-size: 32px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+.sidebar-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: var(--primary);
+}
+.sidebar-bio {
+    font-size: 13px;
+    color: var(--secondary);
+    margin: 0 0 10px 0;
+}
+.sidebar-social {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+.sidebar-social a {
+    color: var(--secondary);
+    transition: color 0.2s;
+}
+.sidebar-social a:hover {
+    color: var(--primary);
+}
+
+/* === 侧边栏样式 === */
+.sidebar-section {
+    margin-bottom: calc(var(--gap) * 1.5);
+    padding: 16px;
+    background: var(--entry);
+    border-radius: var(--radius);
+}
+.sidebar-section h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    color: var(--primary);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+.sidebar-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar-section li {
+    margin-bottom: 6px;
+}
+.sidebar-section li a {
+    font-size: 14px;
+    color: var(--secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.sidebar-section li a:hover {
+    color: var(--primary);
+}
+.sidebar-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.sidebar-tags li {
+    margin-bottom: 0;
+}
+.sidebar-tags li a {
+    display: inline-block;
+    padding: 2px 10px;
+    background: var(--theme);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 13px;
+}
+.sidebar-tags li a:hover {
+    border-color: var(--primary);
+}
+/* 标签彩色区分 */
+.sidebar-tags li:nth-child(4n+1) a { border-color: #3b82f6; color: #3b82f6; }
+.sidebar-tags li:nth-child(4n+2) a { border-color: #10b981; color: #10b981; }
+.sidebar-tags li:nth-child(4n+3) a { border-color: #f59e0b; color: #f59e0b; }
+.sidebar-tags li:nth-child(4n+4) a { border-color: #ef4444; color: #ef4444; }
+.sidebar-tags li a:hover { opacity: 0.8; }
+
+/* === 响应式 === */
+@media (max-width: 1200px) {
+    body.home-profile .main {
+        max-width: min(calc(var(--main-width) + var(--gap) * 2), 100vw);
+        padding: var(--gap);
+    }
+    .home-layout {
+        flex-direction: column;
+        padding: 0 var(--gap);
+    }
+    .home-posts {
+        max-width: 100%;
+        width: 100%;
+        padding-right: 0;
+        margin: 0;
+    }
+    .home-sidebar {
+        width: 100%;
+        position: static;
+        order: -1;
+        padding-left: 0;
+        border-left: none;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 16px;
+        margin-bottom: 20px;
+    }
+    .nav-search-input {
+        width: 120px;
+    }
+    .nav-search-input:focus {
+        width: 160px;
+    }
+    .nav-search-results {
+        width: calc(100vw - 2rem);
+        right: -8px;
+    }
+}
+
+/* === 时光轴美化 === */
+.archive-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 30px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+.archive-filter-btn {
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--secondary);
+    padding: 4px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.archive-filter-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+.archive-filter-btn.active {
+    background: var(--primary);
+    color: var(--theme);
+    border-color: var(--primary);
+}
+
+/* 竖线时间轴 */
+.timeline {
+    position: relative;
+    padding-left: 28px;
+}
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: var(--border);
+}
+.timeline-dot {
+    position: absolute;
+    left: -24px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    background: var(--theme);
+    z-index: 1;
+}
+.year-dot {
+    width: 14px;
+    height: 14px;
+    left: -25px;
+    top: 8px;
+    background: var(--primary);
+}
+.month-dot {
+    top: 6px;
+    background: var(--theme);
+}
+.entry-dot {
+    width: 8px;
+    height: 8px;
+    left: -22px;
+    top: 12px;
+    border-width: 2px;
+}
+
+.timeline .archive-year-header {
+    position: relative;
+    font-size: 22px;
+    margin-top: 0;
+}
+.timeline .archive-month-header {
+    position: relative;
+    font-size: 16px;
+    color: var(--secondary);
+    margin: 16px 0 8px;
+}
+.timeline .archive-month {
+    display: block;
+    padding: 0;
+    border: none;
+}
+.timeline .archive-month:not(:last-of-type) {
+    border: none;
+}
+.timeline .archive-entry {
+    position: relative;
+    padding: 6px 0 6px 0;
+    margin: 4px 0;
+}
+.timeline .archive-entry-content {
+    display: block;
+}
+.timeline .archive-entry-title {
+    font-size: 15px;
+    font-weight: 400;
+    margin: 0;
+}
+.timeline .archive-meta {
+    font-size: 13px;
+    color: var(--secondary);
+}
+.timeline .archive-posts {
+    padding-left: 4px;
+}
+
+/* === 分类页左侧栏布局 === */
+.category-layout {
+    display: flex;
+    gap: 32px;
+    width: 100%;
+}
+.category-sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    position: sticky;
+    top: calc(var(--header-height) + 20px);
+    align-self: flex-start;
+    padding: 16px;
+    background: var(--entry);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+.category-sidebar h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--primary);
+}
+.category-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.category-sidebar li {
+    margin-bottom: 4px;
+}
+.category-sidebar li a {
+    display: block;
+    padding: 6px 10px;
+    font-size: 14px;
+    color: var(--secondary);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+.category-sidebar li a:hover {
+    color: var(--primary);
+    background: var(--theme);
+}
+.category-sidebar li.active a {
+    color: var(--primary);
+    background: var(--theme);
+    font-weight: 600;
+    border-left: 3px solid var(--primary);
+    padding-left: 7px;
+}
+.category-posts {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 768px) {
+    .category-layout {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .category-sidebar {
+        width: 100%;
+        position: static;
+    }
+}

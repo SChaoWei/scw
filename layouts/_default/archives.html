@@ -1,0 +1,119 @@
+{{- define "main" }}
+
+<header class="page-header">
+  <h1>{{ .Title }}</h1>
+  {{- if .Description }}
+  <div class="post-description">
+    {{ .Description }}
+  </div>
+  {{- end }}
+</header>
+
+{{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections }}
+
+{{- if site.Params.ShowAllPagesInArchive }}
+{{- $pages = site.RegularPages }}
+{{- end }}
+
+<!-- 月份筛选导航 -->
+<div class="archive-filter">
+  <button class="archive-filter-btn active" data-filter="all">全部</button>
+  {{- range $pages.GroupByPublishDate "2006" }}
+  {{- if ne .Key "0001" }}
+  {{- $year := replace .Key "0001" "" }}
+  {{- range .Pages.GroupByDate "01" }}
+  <button class="archive-filter-btn" data-filter="{{ $year }}-{{ .Key }}">{{ $year }}.{{ .Key }}</button>
+  {{- end }}
+  {{- end }}
+  {{- end }}
+</div>
+
+{{- range $pages.GroupByPublishDate "2006" }}
+{{- if ne .Key "0001" }}
+<div class="archive-year timeline">
+  {{- $year := replace .Key "0001" "" }}
+  <h2 class="archive-year-header" id="{{ $year }}">
+    <span class="timeline-dot year-dot"></span>
+    <a class="archive-header-link" href="#{{ $year }}">
+      {{- $year -}}
+    </a>
+    <sup class="archive-count">&nbsp;{{ len .Pages }}</sup>
+  </h2>
+  {{- range .Pages.GroupByDate "01" }}
+  <div class="archive-month" data-month="{{ $year }}-{{ .Key }}">
+    <h3 class="archive-month-header">
+      <span class="timeline-dot month-dot"></span>
+      {{ .Key }}月
+      <sup class="archive-count">&nbsp;{{ len .Pages }}</sup>
+    </h3>
+    <div class="archive-posts">
+      {{- range .Pages }}
+      {{- if eq .Kind "page" }}
+      {{- $coverImgName := .Params.cover.image | default site.Params.defaultImage }}
+      {{- $coverUrl := "" -}}
+      {{- if $coverImgName -}}
+        {{- $pbImg := (.Resources.ByType "image").GetMatch (printf "*%s*" $coverImgName) -}}
+        {{- if $pbImg -}}
+          {{- $coverUrl = $pbImg.Permalink -}}
+        {{- else -}}
+          {{- $coverUrl = $coverImgName | relURL -}}
+        {{- end -}}
+      {{- end -}}
+<!-- PLACEHOLDER_ARCHIVES_CONTINUE -->
+
+      <div class="archive-entry" {{ if and $coverUrl (not .Params.cover.hidden) }} data-cover="{{ $coverUrl }}" {{ end }}>
+        <span class="timeline-dot entry-dot"></span>
+        <div class="archive-entry-content">
+          <h3 class="archive-entry-title entry-hint-parent">
+            {{- .Title | markdownify }}
+            {{- if .Draft }}
+            <span class="entry-hint" title="Draft">
+              <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" fill="currentColor">
+                <path d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+              </svg>
+            </span>
+            {{- end }}
+          </h3>
+          <div class="archive-meta">
+            {{- partial "post_meta.html" (dict "page" . "is_list" true) -}}
+          </div>
+        </div>
+        <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .RelPermalink }}"></a>
+      </div>
+      {{- end }}
+      {{- end }}
+    </div>
+  </div>
+  {{- end }}
+</div>
+{{- end }}
+{{- end }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var btns = document.querySelectorAll('.archive-filter-btn');
+    btns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            btns.forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            var filter = btn.getAttribute('data-filter');
+            var months = document.querySelectorAll('.archive-month');
+            var years = document.querySelectorAll('.archive-year');
+            if (filter === 'all') {
+                months.forEach(function(m) { m.style.display = ''; });
+                years.forEach(function(y) { y.style.display = ''; });
+            } else {
+                months.forEach(function(m) {
+                    m.style.display = m.getAttribute('data-month') === filter ? '' : 'none';
+                });
+                years.forEach(function(y) {
+                    var visibleMonths = y.querySelectorAll('.archive-month:not([style*="display: none"])');
+                    y.style.display = visibleMonths.length > 0 ? '' : 'none';
+                });
+            }
+        });
+    });
+});
+</script>
+
+{{- end }}{{/* end main */}}

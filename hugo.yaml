@@ -1,0 +1,101 @@
+baseURL: https://SChaoWei.github.io/scw/
+title: scw_up
+theme: hugo-jijian
+
+defaultContentLanguage: zh-cn
+hasCJKLanguage: true
+timeZone: "Asia/Shanghai"
+
+enableRobotsTXT: true
+cleanDestinationDir: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+
+taxonomies:
+  category: categories
+  tag: tags
+
+menu:
+  main:
+    - identifier: blog
+      name: 博客
+      url: /
+      weight: 1
+    - identifier: projects
+      name: 项目经历
+      url: /projects/
+      weight: 5
+    - identifier: archives
+      name: 时光轴
+      url: /archives/
+      weight: 10
+    - identifier: books
+      name: 最近阅读书籍
+      url: /books/
+      weight: 15
+    - identifier: about
+      name: 关于我
+      url: /about/
+      weight: 30
+
+params:
+  env: production
+  description: 极简（Jijian）HUGO主题，专注于内容的呈现和展示。
+
+  label:
+    text: scw_up
+    iconHeight: 32
+
+
+  mainSections:
+    - posts
+
+  comments: false
+
+  authDuration: 3600
+
+  hidemeta: false
+  DateFormat: 2006年01月02日 15:04:05
+  ShowWordCount: true
+  ShowLastMod: true
+  ShowReadingTime: true
+  readingSpeed: 200
+
+  defaultTheme: auto
+  hideSummary: false
+  ShowShareButtons: true
+  code:
+    showCopyButtons: true
+  ShowRssButtonInSectionTermList: false
+  ShowBreadCrumbs: true
+
+  UseHugoToc: false
+  showtoc: true
+  TocPosition: auto
+  tocopen: true
+  tocHover: true
+  tocHoverDelay: 300
+  tocHideDelay: 1500
+
+  ShowPostNavLinks: false
+  disableSpecial1stPost: true
+  disableScrollToTop: false
+  disableThemeToggle: false
+
+outputs:
+  home:
+    - HTML
+    - RSS
+
+minify:
+  disableXML: true
+  minifyOutput: false
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: false
+  highlight:
+    noClasses: false
+    lineNos: true
