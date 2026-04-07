@@ -420,6 +420,11 @@ body.home-profile .post-entry:hover {
     padding-left: 4px;
 }
 
+/* === blank 布局（项目经历、关于我等）加宽 === */
+.main:has(.post-content) {
+    max-width: min(960px, 100vw);
+}
+
 /* === 分类页左侧栏布局 === */
 .category-layout {
     display: flex;
