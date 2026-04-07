@@ -1,4 +1,4 @@
-baseURL: https://SChaoWei.github.io/scw/
+baseURL: https://yourblog.com/
 title: scw_up
 theme: hugo-jijian
 
@@ -46,6 +46,7 @@ params:
   label:
     text: scw_up
     iconHeight: 32
+    icon: /avatar.png
 
 
   mainSections:
