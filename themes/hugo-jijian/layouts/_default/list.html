@@ -142,7 +142,11 @@
   {{- end }}
   {{- if not (.Param "hideMeta") }}
   <footer class="entry-footer">
-    {{- partial "post_meta.html" (dict "page" . "is_list" true) -}}
+    {{- if .IsSection -}}
+      <span>{{ len .RegularPagesRecursive }}篇内容</span>
+    {{- else -}}
+      {{- partial "post_meta.html" (dict "page" . "is_list" true) -}}
+    {{- end -}}
   </footer>
   {{- end }}
   <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ if and (ne $.Kind "term") (ne $.Kind "taxonomy") }}{{ .Params.link | default .RelPermalink }}{{ else }}{{ .RelPermalink }}{{ end }}"></a>

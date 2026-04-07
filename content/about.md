@@ -75,7 +75,8 @@ summary: "关于我"
 工作之余，我喜欢追逐前沿热点，做一些年轻人喜欢做的事情。
 生活上，也有优秀伴侣（华中科技大学研究生三好标兵-当届唯一硕士生）陪伴左右。
 
-{{< figure src="/show.jpg" caption="日常照片" >}}
+{{< figure src="/show-new.jpg" caption="日常照片" >}}
+
 
 ---
 
