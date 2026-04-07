@@ -84,6 +84,12 @@ params:
   disableScrollToTop: false
   disableThemeToggle: false
 
+  socialIcons:
+    - name: email
+      url: "mailto:iecwsong@163.com"
+    - name: github
+      url: "https://github.com/SChaoWei"
+
 outputs:
   home:
     - HTML
