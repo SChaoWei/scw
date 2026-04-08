@@ -2,7 +2,7 @@
 title: "示例：STM32 最小系统板设计"
 date: 2026-04-06
 categories: ["硬件电路"]
-tags: ["STM32", "PCB", "嵌入式"]
+tags: ["嵌入式"]
 summary: "一篇硬件电路方向的示例文章。"
 ---
 
